@@ -5,15 +5,20 @@ import lombok.Data;
 @Data
 public class ChambreDTO {
     private Long id;
-    private String titre;
+    private String nom;
     private String description;
-    private String emplacement;
+    private String adresse;
     private double prix;
     private String wilaya;
     private String moughataa;
     private boolean estAlloue;
     private int nombreDeReservations;
 
-    // Getters standard générés par @Data
-    // Pas besoin de méthodes supplémentaires car les noms correspondent maintenant
+    public String getTitre() {
+        return this.nom;
+    }
+
+    public String getEmplacement() {
+        return this.adresse;
+    }
 }
