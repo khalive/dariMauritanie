@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- BOXICONS -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/login.css">
+    <title>ResetPassword | SpringProject</title>
+    <!--<html xmlns:th="http://www.thymeleaf.org">-->
+</head>
+<body>
+    <div class="wrapper">
+        <div class="form-header">
+            <div class="titles">
+               <!-- <div class="title-login">Login</div>
+                <div class="title-register">Register</div>
+                <div class="title-forgot-password">Forget Password</div>-->
+                <div class="title-reset-password">Reset Password</div>
+            </div>
+        </div>
+   <!--error param-->
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
+        
+        
+<!-- RESET PASSWORD FORM -->
+
+ <!--<div th:fragment="reset-password"> -->
+<form action="/reset-password" method="post" class="reset-password-form" autocomplete="off">
+    <div class="input-box">
+      <input type="password" name="newpassword" class="input-field" id="reset-pass" required />
+      <label for="reset-pass" class="label">New Password</label>
+      <i class="bx bx-lock-alt icon"></i>
+    </div>
+    <div class="input-box">
+      <input type="password" name="confirmpassword" class="input-field" id="reset-confirm-pass" required />
+      <label for="reset-confirm-pass" class="label">Confirm Password</label>
+      <i class="bx bx-lock-alt icon"></i>
+    </div>
+    
+    <input type="hidden" id="reset-token" name="token" th:value="${token}" />
+    <div class="input-box">
+      <button class="btn-submit" id="ResetPasswordBtn">Reset Password <i class="bx bx-refresh"></i></button>
+    </div>
+    <div class="switch-form">
+      <span>Remember your password? <a href="/login" >Login</a></span>
+    </div>
+  </form>
+<!--</div>-->
+
+
+    <!--onclick="loginFunction()"-->
+
+    <script src="/js/resetpasswd.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

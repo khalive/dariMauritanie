@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gestion Chambres</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --hacker-green: #00ff00;
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--hacker-green);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background-color: var(--darker-bg);
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+            border-right: 1px solid var(--hacker-green);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .nav-link {
+            color: var(--hacker-green);
+            margin-bottom: 5px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(0, 255, 0, 0.1);
+            border-left: 3px solid var(--hacker-green);
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--hacker-green);
+            color: var(--hacker-green);
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: rgba(0, 255, 0, 0.05);
+            border-bottom: 1px solid var(--hacker-green);
+        }
+        
+        .btn-hacker {
+            background-color: transparent;
+            color: var(--hacker-green);
+            border: 1px solid var(--hacker-green);
+            transition: all 0.3s;
+        }
+        
+        .btn-hacker:hover {
+            background-color: var(--hacker-green);
+            color: var(--darker-bg);
+            box-shadow: 0 0 10px var(--hacker-green);
+        }
+        
+        .table-hacker {
+            color: var(--hacker-green);
+            border-color: var(--hacker-green);
+        }
+        
+        .table-hacker th {
+            border-color: var(--hacker-green);
+        }
+        
+        .table-hacker td {
+            border-color: rgba(0, 255, 0, 0.3);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-DISPONIBLE {
+            background-color: rgba(0, 255, 0, 0.1);
+            color: var(--hacker-green);
+        }
+        
+        .status-EN_ATTENTE {
+            background-color: rgba(255, 255, 0, 0.1);
+            color: yellow;
+        }
+        
+        .status-ALLOUEE {
+            background-color: rgba(255, 0, 0, 0.1);
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-terminal"></i> ADMIN PANEL
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-section="pending">
+                    <i class="fas fa-clock"></i> En attente
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="available">
+                    <i class="fas fa-check-circle"></i> Disponibles
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="reserved">
+                    <i class="fas fa-lock"></i> Réservées
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="users">
+                    <i class="fas fa-users"></i> Utilisateurs
+                </a>
+            </li>
+            <li class="nav-item mt-4">
+                <a class="nav-link" href="/logout">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Pending Section -->
+        <div id="pending" class="section active">
+            <h2><i class="fas fa-clock"></i> Chambres en attente de validation</h2>
+            <div class="table-responsive">
+                <table class="table table-hover table-hacker">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Titre</th>
+                            <th>Propriétaire</th>
+                            <th>Prix</th>
+                            <th>Localisation</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingRoomsTable">
+                        <!-- Rempli par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Available Section -->
+        <div id="available" class="section">
+            <h2><i class="fas fa-check-circle"></i> Chambres disponibles</h2>
+            <div class="table-responsive">
+                <table class="table table-hover table-hacker">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Titre</th>
+                            <th>Propriétaire</th>
+                            <th>Prix</th>
+                            <th>Localisation</th>
+                            <th>Réservations</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="availableRoomsTable">
+                        <!-- Rempli par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reserved Section -->
+        <div id="reserved" class="section">
+            <h2><i class="fas fa-lock"></i> Chambres réservées</h2>
+            <div class="table-responsive">
+                <table class="table table-hover table-hacker">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Titre</th>
+                            <th>Propriétaire</th>
+                            <th>Client</th>
+                            <th>Prix</th>
+                            <th>Date Réservation</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservedRoomsTable">
+                        <!-- Rempli par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users" class="section">
+            <h2><i class="fas fa-users"></i> Gestion des utilisateurs</h2>
+            <div class="table-responsive">
+                <table class="table table-hover table-hacker">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th>Chambres</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <!-- Rempli par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Room Details -->
+    <div class="modal fade" id="roomDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background-color: var(--card-bg); color: var(--hacker-green);">
+                <div class="modal-header">
+                    <h5 class="modal-title">Détails de la chambre</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body" id="roomDetailsContent">
+                    <!-- Contenu dynamique -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-hacker" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Navigation entre sections
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Mettre à jour la navigation active
+                document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Cacher toutes les sections
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Afficher la section correspondante
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Fonction pour charger les chambres en attente
+        async function loadPendingRooms() {
+            try {
+                const response = await fetch('/api/admin/chambres/attente');
+                const rooms = await response.json();
+                
+                const tableBody = document.getElementById('pendingRoomsTable');
+                tableBody.innerHTML = '';
+                
+                rooms.forEach(room => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${room.id}</td>
+                        <td>${room.titre}</td>
+                        <td>${room.proprietaire.name}</td>
+                        <td>${room.prix} MRU</td>
+                        <td>${room.wilaya}, ${room.moughataa}</td>
+                        <td>${new Date(room.datePublication).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-hacker btn-sm" onclick="showRoomDetails(${room.id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-hacker btn-sm" onclick="validateRoom(${room.id})">
+                                <i class="fas fa-check"></i> Valider
+                            </button>
+                            <button class="btn btn-hacker btn-sm" onclick="deleteRoom(${room.id})">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Fonction pour valider une chambre
+        async function validateRoom(roomId) {
+            try {
+                const response = await fetch(`/api/admin/chambres/${roomId}/valider`, {
+                    method: 'PUT'
+                });
+                
+                if (response.ok) {
+                    loadPendingRooms();
+                    loadAvailableRooms();
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Fonction pour supprimer une chambre
+        async function deleteRoom(roomId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette chambre ?')) {
+                try {
+                    const response = await fetch(`/api/admin/chambres/${roomId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        loadPendingRooms();
+                        loadAvailableRooms();
+                        loadReservedRooms();
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                }
+            }
+        }
+
+        // Fonction pour afficher les détails d'une chambre
+        async function showRoomDetails(roomId) {
+            try {
+                const response = await fetch(`/api/chambres/${roomId}`);
+                const room = await response.json();
+                
+                const modalContent = document.getElementById('roomDetailsContent');
+                modalContent.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>${room.titre}</h4>
+                            <p><strong>Description:</strong> ${room.description}</p>
+                            <p><strong>Prix:</strong> ${room.prix} MRU</p>
+                            <p><strong>Localisation:</strong> ${room.wilaya}, ${room.moughataa}</p>
+                            <p><strong>Adresse:</strong> ${room.emplacement}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Statut:</strong> <span class="status-badge status-${room.statut}">${room.statut}</span></p>
+                            <p><strong>Propriétaire:</strong> ${room.proprietaire.name}</p>
+                            <p><strong>Email:</strong> ${room.proprietaire.email}</p>
+                            <p><strong>Date publication:</strong> ${new Date(room.datePublication).toLocaleString()}</p>
+                            <p><strong>Réservations:</strong> ${room.nbReservations}</p>
+                        </div>
+                    </div>
+                `;
+                
+                const modal = new bootstrap.Modal(document.getElementById('roomDetailsModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Fonctions pour charger les autres sections (à implémenter)
+        async function loadAvailableRooms() {
+            // Similaire à loadPendingRooms mais pour les chambres disponibles
+        }
+
+        async function loadReservedRooms() {
+            // Pour les chambres réservées
+        }
+
+        async function loadUsers() {
+            // Pour la gestion des utilisateurs
+        }
+
+        // Charger les données initiales
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPendingRooms();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- BOXICONS -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/login.css">
+    <title>Login & Register | SpringProject</title>
+    <!--<html xmlns:th="http://www.thymeleaf.org">-->
+</head>
+<body>
+    <div class="wrapper">
+        <div class="form-header">
+            <div class="titles">
+                <div class="title-login">Login</div>
+                <div class="title-register">Register</div>
+                <div class="title-forgot-password">Forget Password</div>
+            </div>
+        </div>
+   <!--error param-->
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
+        <!-- LOGIN FORM -->
+        <form action="/login" method="post" class="login-form" autocomplete="off" >
+            <div class="input-box">
+                <input type="text" name="email" class="input-field" id="log-email" required>
+                <label for="log-email" class="label">Email</label>
+                <i class='bx bx-envelope icon'></i>
+            </div>
+            <div class="input-box">
+                <input type="password" name="password" class="input-field" id="log-pass" required>
+                <label for="log-pass" class="label">Password</label>
+                <i class='bx bx-lock-alt icon' ></i>
+            </div>
+            <div class="form-cols">
+                <div class="col-1"></div>
+                <div class="col-2">
+                    <a href="#" onclick="forgotPasswordFunction()">Forgot password?</a>
+                </div>
+            </div>
+            <div class="input-box">
+                <button class="btn-submit" id="SignInBtn">Sign In <i class='bx bx-log-in' ></i></button>
+            </div>
+            <div class="switch-form">
+                <span>Don't have an account? <a href="#" onclick="registerFunction()">Register</a></span>
+            </div>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form action="/register" method="post" class="register-form" autocomplete="off" >
+            <div class="input-box">
+                <input type="text" name="name" class="input-field" id="reg-name" required>
+                <label for="reg-name" class="label">Username</label>
+                <i class='bx bx-user icon' ></i>
+            </div>
+            <div class="input-box">
+                <input type="text" name="email" class="input-field" id="reg-email" required>
+                <label for="reg-email" class="label">Email</label>
+                <i class='bx bx-envelope icon'></i>
+            </div>
+            <div class="input-box">
+                <input type="password" name="password" class="input-field" id="reg-pass" required>
+                <label for="reg-pass" class="label">Password</label>
+                <i class='bx bx-lock-alt icon' ></i>
+            </div>
+            <div class="form-cols">
+                <div class="col-1">
+                   <!-- <input type="checkbox" id="agree"> -->
+                    <!--<label for="agree"> I agree to terms & conditions</label>-->
+                </div>
+                <div class="col-2"></div>
+            </div>
+            <div class="input-box">
+                <button class="btn-submit" id="SignUpBtn">Sign Up <i class='bx bx-user-plus' ></i></button>
+            </div>
+            <div class="switch-form">
+                <span>Already have an account? <a href="#" onclick="loginFunction()">Login</a></span>
+            </div>
+        </form>
+
+        <!-- FORGOT PASSWORD FORM -->
+<form action="/forgot-password" method="post" class="forgot-password-form" autocomplete="off" >
+    <div class="input-box">
+        <input type="email" name="email" class="input-field" id="forgot-email" required>
+        <label for="forgot-email" class="label">Enter your email</label>
+        <i class='bx bx-envelope icon'></i>
+    </div>
+    <div class="input-box">
+        <button class="btn-submit" id="ForgotPasswordBtn" >Submit <i class='bx bx-send'></i></button>
+    </div>
+    <div class="switch-form">
+        <span>Remember your password? <a href="#" onclick="loginFunction()">Login</a></span>
+    </div>
+</form>
+
+<!-- RESET PASSWORD FORM -->
+
+ <!--<div th:fragment="reset-password"> -->
+<form action="/reset-password" method="post" class="reset-password-form" autocomplete="off">
+    <div class="input-box">
+      <input type="password" name="newpassword" class="input-field" id="reset-pass" required />
+      <label for="reset-pass" class="label">New Password</label>
+      <i class="bx bx-lock-alt icon"></i>
+    </div>
+    <div class="input-box">
+      <input type="password" name="confirmpassword" class="input-field" id="reset-confirm-pass" required />
+      <label for="reset-confirm-pass" class="label">Confirm Password</label>
+      <i class="bx bx-lock-alt icon"></i>
+    </div>
+    
+    <input type="hidden" id="reset-token" name="token" th:value="${token}" />
+    <div class="input-box">
+      <button class="btn-submit" id="ResetPasswordBtn">Reset Password <i class="bx bx-refresh"></i></button>
+    </div>
+    <div class="switch-form">
+      <span>Remember your password? <a href="#" onclick="loginFunction()">Login</a></span>
+    </div>
+  </form>
+</div>
+
+    
+
+    <script src="/js/login.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
