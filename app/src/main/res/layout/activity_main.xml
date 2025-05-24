@@ -1,53 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    android:padding="16dp"
     tools:context=".MainActivity"
-    android:gravity="center_vertical">
-
-    <!-- Email EditText -->
-    <EditText
-        android:id="@+id/edtEmailAddressLog"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Email Address"
-        android:inputType="textEmailAddress" />
-
-    <!-- Password EditText -->
-    <EditText
-        android:id="@+id/edtPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPassword"
-        android:hint="Password" />
-
-    <!-- Login Button -->
-    <Button
-        android:id="@+id/btnLoginLog"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Se connecter" />
-
-    <!-- Register Button -->
-    <Button
-        android:id="@+id/btnRegisterLog"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="S'inscrire" />
-
-    <!-- TextView for displaying info -->
-    <TextView
-        android:id="@+id/txtDisplayInfLog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Info Text"
-        android:layout_marginTop="16dp"
-        android:gravity="center" />
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 </LinearLayout>

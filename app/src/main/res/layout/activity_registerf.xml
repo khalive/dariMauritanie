@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="24dp"
+    android:gravity="center_horizontal"
+    tools:context=".RegisterF">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:layout_marginBottom="32dp"
+        android:shadowColor="#AAAAAA"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="1" />
+
+    <EditText
+        android:id="@+id/edtFullnameReg"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Full Name"
+        android:inputType="text"
+        android:background="@android:drawable/editbox_background_normal"
+        android:padding="14dp"
+        android:layout_marginBottom="12dp"
+        android:textSize="16sp"
+        android:elevation="2dp" />
+
+    <EditText
+        android:id="@+id/edtEmailAddressReg"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"
+        android:background="@android:drawable/editbox_background_normal"
+        android:padding="14dp"
+        android:layout_marginBottom="12dp"
+        android:textSize="16sp"
+        android:elevation="2dp" />
+
+    <EditText
+        android:id="@+id/edtPasswordReg"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:background="@android:drawable/editbox_background_normal"
+        android:padding="14dp"
+        android:layout_marginBottom="12dp"
+        android:textSize="16sp"
+        android:elevation="2dp" />
+
+    <EditText
+        android:id="@+id/edtDOBReg"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Date Of Birth"
+        android:inputType="date"
+        android:background="@android:drawable/editbox_background_normal"
+        android:padding="14dp"
+        android:layout_marginBottom="12dp"
+        android:textSize="16sp"
+        android:elevation="2dp" />
+
+    <EditText
+        android:id="@+id/edtPhonNumberReg"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Phone Number"
+        android:inputType="phone"
+        android:background="@android:drawable/editbox_background_normal"
+        android:padding="14dp"
+        android:layout_marginBottom="12dp"
+        android:textSize="16sp"
+        android:elevation="2dp" />
+
+    <EditText
+        android:id="@+id/edtBioReg"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:hint="Biography"
+        android:inputType="textMultiLine"
+        android:background="@android:drawable/editbox_background_normal"
+        android:padding="14dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="16sp"
+        android:elevation="2dp" />
+
+    <Button
+        android:id="@+id/btnRegisterReg"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="REGISTER"
+        android:backgroundTint="#6200EE"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:layout_marginBottom="12dp"
+        android:elevation="4dp"
+        android:stateListAnimator="@null" />
+
+    <Button
+        android:id="@+id/btnLoginReg"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="LOGIN"
+        android:backgroundTint="#03DAC5"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:elevation="4dp"
+        android:stateListAnimator="@null" />
+
+</LinearLayout>
