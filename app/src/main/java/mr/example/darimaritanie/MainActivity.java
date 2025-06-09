@@ -1,39 +1,52 @@
 package mr.example.darimaritanie;
-
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import mr.example.darimaritanie.adapter.HouseAdapter;
-import mr.example.darimaritanie.model.House;
+import mr.example.darimaritanie.api.ChambreApi;
+import mr.example.darimaritanie.model.Chambre;
+import mr.example.darimaritanie.model.ChambreResponse;
+//import mr.example.darimaritanie.adapter.ChambreAdapter;
 
-import java.util.ArrayList;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
     private RecyclerView recyclerView;
-    private List<House> houseList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.item_house);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recyclerView);
 
-        houseList = new ArrayList<>();
-        houseList.add(new House("house1", "Paris", "Ali", "300000€", true, "0606060606"));
-        houseList.add(new House("house2", "Lyon", "Fatima", "2000€/mois", false, "0707070707"));
-        houseList.add(new House("house3", "Marseille", "Omar", "250000€", true, "0605050505"));
-        houseList.add(new House("house5", "Toulouse", "Said", "1800€/mois", false, "0656565656"));
-// etc.
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8081/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new HouseAdapter(this, houseList));
+        ChambreApi api = retrofit.create(ChambreApi.class);
+        api.getChambres().enqueue(new Callback<ChambreResponse>() {
+            @Override
+            public void onResponse(Call<ChambreResponse> call, Response<ChambreResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Chambre> chambreList = response.body().getData();
+                    recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+//                    recyclerView.setAdapter(new ChambreAdapter(MainActivity.this, chambreList));
+                    recyclerView.setAdapter(new HouseAdapter(MainActivity.this, chambreList));
+                }
+            }
+            @Override
+            public void onFailure(Call<ChambreResponse> call, Throwable t) {
+                // Handle error (e.g., show a Toast)
+            }
+        });
     }
 }

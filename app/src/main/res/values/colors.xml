@@ -2,4 +2,27 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="light_blue">#E3F2FD</color>
+    <color name="light_green">#E8F5E9</color>
+
+    <!-- Primary Green Theme -->
+    <color name="primary_green">#2E7D32</color>
+    <color name="primary_green_dark">#1B5E20</color>
+    <color name="primary_green_light">#81C784</color>
+
+    <!-- Accent Blue -->
+    <color name="accent_blue">#1976D2</color>
+    <color name="accent_blue_light">#64B5F6</color>
+
+    <!-- Backgrounds -->
+    <color name="light_blue_50">#E3F2FD</color>
+    <color name="light_blue_200">#90CAF9</color>
+
+    <!-- Status Colors -->
+    <color name="orange">#FF9800</color>
+    <color name="orange_light">#FFE0B2</color>
+    <color name="red_400">#EF5350</color>
+
+    <!-- Gradient Background -->
+    <color name="light_blue_gradient">#E3F2FD</color>
 </resources>

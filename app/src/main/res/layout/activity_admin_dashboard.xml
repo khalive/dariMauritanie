@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#E3F2FD">
+
+    <!-- App Bar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#2E7D32"
+    android:elevation="4dp"
+    app:title="Admin Dashboard"
+    app:titleTextColor="@android:color/white">
+
+    <!-- Replaced ic_admin with text -->
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:text="A"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+</com.google.android.material.appbar.MaterialToolbar>
+
+    <!-- Tab Layout -->
+<com.google.android.material.tabs.TabLayout
+android:id="@+id/tabLayout"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:background="#81C784"
+    app:tabTextColor="@android:color/white"
+    app:tabSelectedTextColor="@android:color/white"
+    app:tabIndicatorColor="#1976D2"
+    app:tabIndicatorHeight="4dp">
+
+<com.google.android.material.tabs.TabItem
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Pending" />
+
+<com.google.android.material.tabs.TabItem
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Approved" />
+
+<com.google.android.material.tabs.TabItem
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Rejected" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- House List -->
+<androidx.recyclerview.widget.RecyclerView
+android:id="@+id/recyclerViewHouses"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:padding="8dp"
+android:clipToPadding="false"/>
+    </LinearLayout>

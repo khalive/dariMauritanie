@@ -2,6 +2,7 @@ package mr.example.darimaritanie;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import okhttp3.*;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 
@@ -90,18 +93,51 @@ public class MainActivityF extends AppCompatActivity {
                 String responseBody = response.body().string();
                 runOnUiThread(() -> {
                     if (response.isSuccessful()) {
-                        showSuccess("Login successful!");
-                        // Redirect to main activity
-                        Intent intent = new Intent(MainActivityF.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                        try {
+                            // Debug: Log the raw response
+                            Log.d("LOGIN_RESPONSE", "Raw response: " + responseBody);
+
+                            // Parse the JSON response
+                            JSONObject jsonResponse = new JSONObject(responseBody);
+
+                            // Safe extraction with default value
+                            String role = jsonResponse.optString("role", "user").toLowerCase();
+
+                            // Debug: Log the extracted role
+                            Log.d("LOGIN_RESPONSE", "User role: " + role);
+
+                            showSuccess("Login successful!");
+
+                            // Redirect based on role
+                            Intent intent;
+                            if ("admin".equals(role)) {
+                                try {
+                                    intent = new Intent(MainActivityF.this, AdminActivity.class);
+                                    Log.d("NAVIGATION", "Redirecting to AdminActivity");
+                                } catch (Exception e) {
+                                    showError("Admin activity not available");
+                                    return;
+                                }
+                            } else {
+                                intent = new Intent(MainActivityF.this, MainActivity.class);
+                                Log.d("NAVIGATION", "Redirecting to MainActivity");
+                            }
+
+                            startActivity(intent);
+                            finish();
+
+                        } catch (JSONException e) {
+                            showError("Server returned invalid data. Expected JSON.");
+                            Log.e("JSON_PARSE", "Error parsing: " + responseBody, e);
+                        }
                     } else {
                         try {
+                            // Try to parse error message
                             JSONObject errorJson = new JSONObject(responseBody);
                             String errorMessage = errorJson.optString("message", "Login failed");
                             showError(errorMessage);
                         } catch (Exception e) {
-                            showError("Login failed: " + responseBody);
+                            showError("Login failed. Server response: " + responseBody);
                         }
                     }
                 });

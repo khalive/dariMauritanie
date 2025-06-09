@@ -28,7 +28,7 @@
         <!-- Activités du premier projet -->
         <activity android:name=".RegisterF" android:exported="false" />
 
-
+        <activity android:name=".AdminActivity" />
         <!-- Activités du second projet -->
         <activity android:name=".MainActivity" android:exported="true" />
         <activity android:name=".DetailsActivity" />
