@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Espace - Gestion Chambres</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --hacker-green: #00ff00;
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--hacker-green);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background-color: var(--darker-bg);
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+            border-right: 1px solid var(--hacker-green);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .nav-link {
+            color: var(--hacker-green);
+            margin-bottom: 5px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(0, 255, 0, 0.1);
+            border-left: 3px solid var(--hacker-green);
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--hacker-green);
+            color: var(--hacker-green);
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: rgba(0, 255, 0, 0.05);
+            border-bottom: 1px solid var(--hacker-green);
+        }
+        
+        .btn-hacker {
+            background-color: transparent;
+            color: var(--hacker-green);
+            border: 1px solid var(--hacker-green);
+            transition: all 0.3s;
+        }
+        
+        .btn-hacker:hover {
+            background-color: var(--hacker-green);
+            color: var(--darker-bg);
+            box-shadow: 0 0 10px var(--hacker-green);
+        }
+        
+        .form-control, .form-select {
+            background-color: var(--darker-bg);
+            color: var(--hacker-green);
+            border: 1px solid var(--hacker-green);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: var(--darker-bg);
+            color: var(--hacker-green);
+            border-color: var(--hacker-green);
+            box-shadow: 0 0 0 0.25rem rgba(0, 255, 0, 0.25);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-DISPONIBLE {
+            background-color: rgba(0, 255, 0, 0.1);
+            color: var(--hacker-green);
+        }
+        
+        .status-EN_ATTENTE {
+            background-color: rgba(255, 255, 0, 0.1);
+            color: yellow;
+        }
+        
+        .status-ALLOUEE {
+            background-color: rgba(255, 0, 0, 0.1);
+            color: red;
+        }
+        
+        .room-card {
+            transition: transform 0.3s;
+        }
+        
+        .room-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-user"></i> MON ESPACE
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-section="myRooms">
+                    <i class="fas fa-home"></i> Mes chambres
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="addRoom">
+                    <i class="fas fa-plus-circle"></i> Ajouter une chambre
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="availableRooms">
+                    <i class="fas fa-search"></i> Chambres disponibles
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="reservations">
+                    <i class="fas fa-calendar-check"></i> Mes réservations
+                </a>
+            </li>
+            <li class="nav-item mt-4">
+                <a class="nav-link" href="/logout">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- My Rooms Section -->
+        <div id="myRooms" class="section active">
+            <h2><i class="fas fa-home"></i> Mes chambres</h2>
+            <div class="row" id="myRoomsList">
+                <!-- Rempli par JavaScript -->
+            </div>
+        </div>
+
+        <!-- Add Room Section -->
+        <div id="addRoom" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-plus-circle"></i> Ajouter une nouvelle chambre</h3>
+                </div>
+                <div class="card-body">
+                    <form id="addRoomForm">
+                        <div class="mb-3">
+                            <label for="roomTitle" class="form-label">Titre</label>
+                            <input type="text" class="form-control" id="roomTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="roomDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="roomDescription" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="roomPrice" class="form-label">Prix (MRU)</label>
+                                <input type="number" class="form-control" id="roomPrice" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="roomWilaya" class="form-label">Wilaya</label>
+                                <select class="form-select" id="roomWilaya" required>
+                                    <option value="">Sélectionner une wilaya</option>
+                                    <option value="Nouakchott">Nouakchott</option>
+                                    <option value="Dakhlet Nouadhibou">Dakhlet Nouadhibou</option>
+                                    <!-- Ajouter d'autres wilayas -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="roomMoughataa" class="form-label">Moughataa</label>
+                                <input type="text" class="form-control" id="roomMoughataa" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="roomLocation" class="form-label">Emplacement exact</label>
+                                <input type="text" class="form-control" id="roomLocation">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-hacker">
+                            <i class="fas fa-paper-plane"></i> Publier l'annonce
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Rooms Section -->
+        <div id="availableRooms" class="section">
+            <h2><i class="fas fa-search"></i> Chambres disponibles</h2>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="searchForm">
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <label for="searchWilaya" class="form-label">Wilaya</label>
+                                        <select class="form-select" id="searchWilaya">
+                                            <option value="">Toutes</option>
+                                            <option value="Nouakchott">Nouakchott</option>
+                                            <option value="Dakhlet Nouadhibou">Dakhlet Nouadhibou</option>
+                                            <!-- Ajouter d'autres wilayas -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label for="searchMoughataa" class="form-label">Moughataa</label>
+                                        <input type="text" class="form-control" id="searchMoughataa">
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label for="searchMaxPrice" class="form-label">Prix maximum</label>
+                                        <input type="number" class="form-control" id="searchMaxPrice" placeholder="MRU">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-hacker mt-2">
+                                    <i class="fas fa-filter"></i> Filtrer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="availableRoomsList">
+                <!-- Rempli par JavaScript -->
+            </div>
+        </div>
+
+        <!-- Reservations Section -->
+        <div id="reservations" class="section">
+            <h2><i class="fas fa-calendar-check"></i> Mes réservations</h2>
+            <div class="row" id="reservationsList">
+                <!-- Rempli par JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Details Modal -->
+    <div class="modal fade" id="roomDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background-color: var(--card-bg); color: var(--hacker-green);">
+                <div class="modal-header">
+                    <h5 class="modal-title">Détails de la chambre</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body" id="roomDetailsContent">
+                    <!-- Contenu dynamique -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-hacker" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-hacker" id="reserveBtn" style="display: none;">
+                        <i class="fas fa-lock"></i> Réserver
+                    </button>
+                    <button type="button" class="btn btn-hacker" id="editBtn" style="display: none;">
+                        <i class="fas fa-edit"></i> Modifier
+                    </button>
+                    <button type="button" class="btn btn-hacker" id="deleteBtn" style="display: none;">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Room Modal -->
+    <div class="modal fade" id="editRoomModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: var(--card-bg); color: var(--hacker-green);">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier la chambre</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editRoomForm">
+                        <input type="hidden" id="editRoomId">
+                        <div class="mb-3">
+                            <label for="editRoomTitle" class="form-label">Titre</label>
+                            <input type="text" class="form-control" id="editRoomTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRoomDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="editRoomDescription" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editRoomPrice" class="form-label">Prix (MRU)</label>
+                                <input type="number" class="form-control" id="editRoomPrice" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editRoomWilaya" class="form-label">Wilaya</label>
+                                <select class="form-select" id="editRoomWilaya" required>
+                                    <option value="">Sélectionner une wilaya</option>
+                                    <option value="Nouakchott">Nouakchott</option>
+                                    <option value="Dakhlet Nouadhibou">Dakhlet Nouadhibou</option>
+                                    <!-- Ajouter d'autres wilayas -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editRoomMoughataa" class="form-label">Moughataa</label>
+                                <input type="text" class="form-control" id="editRoomMoughataa" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editRoomLocation" class="form-label">Emplacement exact</label>
+                                <input type="text" class="form-control" id="editRoomLocation">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-hacker" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-hacker" onclick="updateRoom()">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Navigation entre sections
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Mettre à jour la navigation active
+                document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Cacher toutes les sections
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Afficher la section correspondante
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Charger les données si nécessaire
+                if (sectionId === 'myRooms') {
+                    loadMyRooms();
+                } else if (sectionId === 'availableRooms') {
+                    loadAvailableRooms();
+                } else if (sectionId === 'reservations') {
+                    loadReservations();
+                }
+            });
+        });
+
+        // Charger les chambres de l'utilisateur
+        async function loadMyRooms() {
+            try {
+                const response = await fetch('/api/user/chambres');
+                const rooms = await response.json();
+                
+                const roomsContainer = document.getElementById('myRoomsList');
+                roomsContainer.innerHTML = '';
+                
+                if (rooms.length === 0) {
+                    roomsContainer.innerHTML = `
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-home fa-3x mb-3"></i>
+                                    <h4>Vous n'avez pas encore de chambres publiées</h4>
+                                    <p>Cliquez sur "Ajouter une chambre" pour commencer</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                rooms.forEach(room => {
+                    const roomCard = document.createElement('div');
+                    roomCard.className = 'col-md-6 col-lg-4 mb-4';
+                    roomCard.innerHTML = `
+                        <div class="card room-card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">${room.titre}</h5>
+                                <span class="status-badge status-${room.statut}">${room.statut}</span>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="fas fa-map-marker-alt"></i> ${room.wilaya}, ${room.moughataa}</p>
+                                <p><i class="fas fa-money-bill-wave"></i> ${room.prix} MRU</p>
+                                <p><i class="fas fa-calendar-alt"></i> ${new Date(room.datePublication).toLocaleDateString()}</p>
+                                <p><i class="fas fa-user-clock"></i> ${room.nbReservations} réservation(s)</p>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <button class="btn btn-hacker btn-sm" onclick="showRoomDetails(${room.id}, true)">
+                                    <i class="fas fa-eye"></i> Détails
+                                </button>
+                                ${room.statut === 'EN_ATTENTE' || room.statut === 'DISPONIBLE' ? `
+                                <button class="btn btn-hacker btn-sm" onclick="editRoom(${room.id})">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </button>
+                                <button class="btn btn-hacker btn-sm" onclick="deleteMyRoom(${room.id})">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                    roomsContainer.appendChild(roomCard);
+                });
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Ajouter une nouvelle chambre
+        document.getElementById('addRoomForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const roomData = {
+                titre: document.getElementById('roomTitle').value,
+                description: document.getElementById('roomDescription').value,
+                prix: parseFloat(document.getElementById('roomPrice').value),
+                wilaya: document.getElementById('roomWilaya').value,
+                moughataa: document.getElementById('roomMoughataa').value,
+                emplacement: document.getElementById('roomLocation').value
+            };
+            
+            try {
+                const response = await fetch('/api/chambres', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(roomData)
+                });
+                
+                if (response.ok) {
+                    alert('Chambre ajoutée avec succès! Elle est maintenant en attente de validation.');
+                    this.reset();
+                    // Revenir à la section Mes chambres
+                    document.querySelector('[data-section="myRooms"]').click();
+                } else {
+                    alert('Erreur lors de l\'ajout de la chambre');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la communication avec le serveur');
+            }
+        });
+
+        // Charger les chambres disponibles
+        async function loadAvailableRooms() {
+            try {
+                const wilaya = document.getElementById('searchWilaya').value;
+                const moughataa = document.getElementById('searchMoughataa').value;
+                const prixMax = document.getElementById('searchMaxPrice').value;
+                
+                let url = '/api/chambres/search?';
+                if (wilaya) url += `wilaya=${wilaya}&`;
+                if (moughataa) url += `moughataa=${moughataa}&`;
+                if (prixMax) url += `prixMax=${prixMax}&`;
+                
+                const response = await fetch(url);
+                const rooms = await response.json();
+                
+                const roomsContainer = document.getElementById('availableRoomsList');
+                roomsContainer.innerHTML = '';
+                
+                if (rooms.length === 0) {
+                    roomsContainer.innerHTML = `
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-search fa-3x mb-3"></i>
+                                    <h4>Aucune chambre trouvée</h4>
+                                    <p>Essayez de modifier vos critères de recherche</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                rooms.forEach(room => {
+                    const roomCard = document.createElement('div');
+                    roomCard.className = 'col-md-6 col-lg-4 mb-4';
+                    roomCard.innerHTML = `
+                        <div class="card room-card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">${room.titre}</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="fas fa-map-marker-alt"></i> ${room.wilaya}, ${room.moughataa}</p>
+                                <p><i class="fas fa-money-bill-wave"></i> ${room.prix} MRU</p>
+                                <p><i class="fas fa-calendar-alt"></i> ${new Date(room.datePublication).toLocaleDateString()}</p>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <button class="btn btn-hacker btn-sm" onclick="showRoomDetails(${room.id})">
+                                    <i class="fas fa-eye"></i> Voir détails
+                                </button>
+                                <button class="btn btn-hacker btn-sm" onclick="reserveRoom(${room.id})" ${room.statut !== 'DISPONIBLE' ? 'disabled' : ''}>
+                                    <i class="fas fa-lock"></i> Réserver
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    roomsContainer.appendChild(roomCard);
+                });
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Filtrer les chambres disponibles
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            loadAvailableRooms();
+        });
+
+        // Afficher les détails d'une chambre
+        async function showRoomDetails(roomId, isOwner = false) {
+            try {
+                const response = await fetch(`/api/chambres/${roomId}`);
+                const room = await response.json();
+                
+                const modalContent = document.getElementById('roomDetailsContent');
+                modalContent.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>${room.titre}</h4>
+                            <p><strong>Description:</strong> ${room.description}</p>
+                            <p><strong>Prix:</strong> ${room.prix} MRU</p>
+                            <p><strong>Localisation:</strong> ${room.wilaya}, ${room.moughataa}</p>
+                            <p><strong>Adresse:</strong> ${room.emplacement}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Statut:</strong> <span class="status-badge status-${room.statut}">${room.statut}</span></p>
+                            <p><strong>Propriétaire:</strong> ${room.proprietaire.name}</p>
+                            <p><strong>Date publication:</strong> ${new Date(room.datePublication).toLocaleString()}</p>
+                            <p><strong>Réservations:</strong> ${room.nbReservations}</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Afficher/masquer les boutons selon le contexte
+                const reserveBtn = document.getElementById('reserveBtn');
+                const editBtn = document.getElementById('editBtn');
+                const deleteBtn = document.getElementById('deleteBtn');
+                
+                reserveBtn.style.display = room.statut === 'DISPONIBLE' && !isOwner ? 'block' : 'none';
+                editBtn.style.display = isOwner ? 'block' : 'none';
+                deleteBtn.style.display = isOwner ? 'block' : 'none';
+                
+                if (reserveBtn.style.display === 'block') {
+                    reserveBtn.onclick = () => reserveRoom(room.id);
+                }
+                if (editBtn.style.display === 'block') {
+                    editBtn.onclick = () => editRoom(room.id);
+                }
+                if (deleteBtn.style.display === 'block') {
+                    deleteBtn.onclick = () => deleteMyRoom(room.id);
+                }
+                
+                const modal = new bootstrap.Modal(document.getElementById('roomDetailsModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Réserver une chambre
+        async function reserveRoom(roomId) {
+            try {
+                const response = await fetch(`/api/chambres/${roomId}/reserver`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    alert('Chambre réservée avec succès!');
+                    loadAvailableRooms();
+                    loadReservations();
+                    
+                    // Fermer le modal si ouvert
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('roomDetailsModal'));
+                    if (modal) modal.hide();
+                } else {
+                    alert('Erreur lors de la réservation');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la communication avec le serveur');
+            }
+        }
+
+        // Charger les réservations de l'utilisateur
+        async function loadReservations() {
+            // À implémenter selon votre logique de réservation
+            document.getElementById('reservationsList').innerHTML = `
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calendar-check fa-3x mb-3"></i>
+                            <h4>Fonctionnalité à venir</h4>
+                            <p>Cette section affichera bientôt vos réservations</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Éditer une chambre
+        async function editRoom(roomId) {
+            try {
+                const response = await fetch(`/api/chambres/${roomId}`);
+                const room = await response.json();
+                
+                document.getElementById('editRoomId').value = room.id;
+                document.getElementById('editRoomTitle').value = room.titre;
+                document.getElementById('editRoomDescription').value = room.description;
+                document.getElementById('editRoomPrice').value = room.prix;
+                document.getElementById('editRoomWilaya').value = room.wilaya;
+                document.getElementById('editRoomMoughataa').value = room.moughataa;
+                document.getElementById('editRoomLocation').value = room.emplacement;
+                
+                const modal = new bootstrap.Modal(document.getElementById('editRoomModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Mettre à jour une chambre
+        async function updateRoom() {
+            const roomId = document.getElementById('editRoomId').value;
+            const roomData = {
+                titre: document.getElementById('editRoomTitle').value,
+                description: document.getElementById('editRoomDescription').value,
+                prix: parseFloat(document.getElementById('editRoomPrice').value),
+                wilaya: document.getElementById('editRoomWilaya').value,
+                moughataa: document.getElementById('editRoomMoughataa').value,
+                emplacement: document.getElementById('editRoomLocation').value
+            };
+            
+            try {
+                const response = await fetch(`/api/chambres/${roomId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(roomData)
+                });
+                
+                if (response.ok) {
+                    alert('Chambre mise à jour avec succès!');
+                    loadMyRooms();
+                    
+                    // Fermer le modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editRoomModal'));
+                    if (modal) modal.hide();
+                } else {
+                    alert('Erreur lors de la mise à jour');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la communication avec le serveur');
+            }
+        }
+
+        // Supprimer une chambre
+        async function deleteMyRoom(roomId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette chambre ? Cette action est irréversible.')) {
+                try {
+                    const response = await fetch(`/api/chambres/${roomId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        alert('Chambre supprimée avec succès!');
+                        loadMyRooms();
+                        
+                        // Fermer le modal si ouvert
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('roomDetailsModal'));
+                        if (modal) modal.hide();
+                    } else {
+                        alert('Erreur lors de la suppression');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la communication avec le serveur');
+                }
+            }
+        }
+
+        // Charger les données initiales
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMyRooms();
+        });
+    </script>
+</body>
+</html>
